@@ -15,14 +15,14 @@ import org.springframework.context.annotation.PropertySource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-@Configuration
-@PropertySource("classpath:/application.properties")
+@Configuration // 이게 자바 설정 파일이다.
+@PropertySource("classpath:/application.properties") // application.properties 파일에서 설정을 찾겠다.
 public class DatabaseConfiguration {
 
   @Autowired
   private ApplicationContext applicationContext;
 
-  @Bean
+  @Bean // spring.datasource.hikari로 시작하는 설정에서 정보를 가져오겠다.
   @ConfigurationProperties(prefix = "spring.datasource.hikari")
   public HikariConfig hikariConfig() {
     return new HikariConfig();
@@ -36,10 +36,17 @@ public class DatabaseConfiguration {
   }
 
   @Bean
+  @ConfigurationProperties(prefix = "mybatis.configuration") // 설정 파일에서 마이바티스 설정 가져옴
+  public org.apache.ibatis.session.Configuration mybatisConfig() {
+    return new org.apache.ibatis.session.Configuration(); // 설정을 자바 클래스로 반환
+  }
+
+  @Bean
   public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
     SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
-    sqlSessionFactoryBean.setDataSource(dataSource);
+    sqlSessionFactoryBean.setDataSource(dataSource); // 데이터베이스 연결
     sqlSessionFactoryBean.setMapperLocations(applicationContext.getResources("classpath:/mapper/**/sql-*.xml"));
+    sqlSessionFactoryBean.setConfiguration(mybatisConfig()); // 마이바티스 설정 추가
     return sqlSessionFactoryBean.getObject();
   }
 
@@ -47,4 +54,5 @@ public class DatabaseConfiguration {
   public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
     return new SqlSessionTemplate(sqlSessionFactory);
   }
+
 }
