@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.board.board.mapper.BoardMapper">
-  <select id="selectBoardList" resultType="com.example.board.board.dto.BoardDto">
+<mapper namespace="board.board.mapper.BoardMapper">
+  <select id="selectBoardList" resultType="board.board.dto.BoardDto">
     <![CDATA[
 			SELECT
 				board_idx,
@@ -17,7 +17,7 @@
 		]]>
   </select>
 
-  <insert id="insertBoard" parameterType="com.example.board.board.dto.BoardDto">
+  <insert id="insertBoard" parameterType="board.board.dto.BoardDto">
     <![CDATA[
       INSERT INTO t_board
       (
@@ -47,7 +47,7 @@
     ]]>
   </update>
 
-  <select id="selectBoardDetail" parameterType="int" resultType="com.example.board.board.dto.BoardDto">
+  <select id="selectBoardDetail" parameterType="int" resultType="board.board.dto.BoardDto">
     <![CDATA[
 			SELECT
 				board_idx,
@@ -64,7 +64,7 @@
 		]]>
   </select>
 
-  <update id="updateBoard" parameterType="com.example.board.board.dto.BoardDto">
+  <update id="updateBoard" parameterType="board.board.dto.BoardDto">
     <![CDATA[
 			UPDATE t_board SET 
 				title = #{title},
