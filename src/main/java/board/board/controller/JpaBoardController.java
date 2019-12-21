@@ -6,13 +6,14 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import board.board.dto.BoardDto;
-import board.board.dto.BoardFileDto;
-import board.board.service.BoardService;
+import board.board.entity.BoardEntity;
+import board.board.entity.BoardFileEntity;
+import board.board.service.JpaBoardService;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,57 +25,58 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class RestBoardController {
+public class JpaBoardController {
   @Autowired
-  private BoardService boardService;
+  private JpaBoardService jpaBoardService;
 
-  @GetMapping("/board")
-  public ModelAndView openBoardList() throws Exception {
-    ModelAndView mv = new ModelAndView("/board/restBoardList");
+  @GetMapping("/jpa/board")
+  public ModelAndView openBoardList(ModelMap model) throws Exception {
+    ModelAndView mv = new ModelAndView("/board/jpaBoardList");
 
-    List<BoardDto> list = boardService.selectBoardList();
+    List<BoardEntity> list = jpaBoardService.selectBoardList();
     mv.addObject("list", list);
 
     return mv;
   }
 
-  @GetMapping("/board/write")
+  @GetMapping("/jpa/board/write")
   public String openBoardWrite() throws Exception {
-    return "/board/restBoardWrite";
+    return "/board/jpaBoardWrite";
   }
 
-  @PostMapping("/board/write")
-  public String insertBoard(BoardDto board, MultipartHttpServletRequest multipartHttpServletRequest) throws Exception {
-    boardService.insertBoard(board, multipartHttpServletRequest);
-    return "redirect:/board";
+  @PostMapping("/jpa/board/write")
+  public String insertBoard(BoardEntity board, MultipartHttpServletRequest multipartHttpServletRequest)
+      throws Exception {
+    jpaBoardService.saveBoard(board, multipartHttpServletRequest);
+    return "redirect:/jpa/board";
   }
 
-  @GetMapping("/board/{boardIdx}")
+  @GetMapping("/jpa/board/{boardIdx}")
   public ModelAndView openBoardDetail(@PathVariable("boardIdx") int boardIdx) throws Exception {
-    ModelAndView mv = new ModelAndView("/board/restBoardDetail");
+    ModelAndView mv = new ModelAndView("/board/jpaBoardDetail");
 
-    BoardDto board = boardService.selectBoardDetail(boardIdx);
+    BoardEntity board = jpaBoardService.selectBoardDetail(boardIdx);
     mv.addObject("board", board);
 
     return mv;
   }
 
-  @PutMapping("/board/{boardIdx}")
-  public String updateBoard(BoardDto board) throws Exception {
-    boardService.updateBoard(board);
-    return "redirect:/board";
+  @PutMapping("/jpa/board/{boardIdx}")
+  public String updateBoard(BoardEntity board) throws Exception {
+    jpaBoardService.saveBoard(board, null);
+    return "redirect:/jpa/board";
   }
 
-  @DeleteMapping("/board/{boardIdx}")
+  @DeleteMapping("/jpa/board/{boardIdx}")
   public String deleteBoard(@PathVariable("boardIdx") int boardIdx) throws Exception {
-    boardService.deleteBoard(boardIdx);
-    return "redirect:/board";
+    jpaBoardService.deleteBoard(boardIdx);
+    return "redirect:/jpa/board";
   }
 
-  @GetMapping("/board/file")
-  public void downloadBoardFile(@RequestParam int idx, @RequestParam int boardIdx, HttpServletResponse response)
+  @GetMapping("/jpa/board/file")
+  public void downloadBoardFile(@RequestParam int boardIdx, @RequestParam int idx, HttpServletResponse response)
       throws Exception {
-    BoardFileDto boardFile = boardService.selectBoardFileInformation(idx, boardIdx);
+    BoardFileEntity boardFile = jpaBoardService.selectBoardFileInformation(boardIdx, idx);
 
     if (ObjectUtils.isEmpty(boardFile) == false) {
       String fileName = boardFile.getOriginalFileName();

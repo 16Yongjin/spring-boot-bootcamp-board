@@ -1,5 +1,7 @@
 package board.configuration;
 
+import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import org.springframework.context.ApplicationContext;
@@ -53,5 +55,10 @@ public class DatabaseConfiguration {
   @Bean
   public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
     return new SqlSessionTemplate(sqlSessionFactory);
+  }
+
+  @ConfigurationProperties(prefix = "spring.jpa")
+  public Properties hibernateConfig() {
+    return new Properties();
   }
 }
